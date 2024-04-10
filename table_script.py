@@ -1,5 +1,5 @@
 # Rate table creation
-def rate_table(folder):
+def Rate_Table(folder):
     import pandas as pd
     import glob
     import re
@@ -22,25 +22,24 @@ def rate_table(folder):
 
 
 # URRT Table formation
-
-def Create_table(folder):
+def URRT_Table(folder):
     
     # Import needed packages 
     import pandas as pd
-    import glob
     from pathlib import Path
-    value = float('nan') 
+    
     # assign directory
     directory = folder
     
     # iterate over files in that directory
     files = Path(directory).glob('*')
         
-    # Initializing Dictionary 
+    # Initializing Dictionary
+    column_names = ['Year','Plan ID','Plan Name','Metal Tier','Av Metal Value','Region','Plan Category','Carrier Type','Exchange Plan?','Network', 'Age', 'Benefits in Addition to EHB','HIOS_ID'] 
     df_dict = {}
-    for i in column_names_1:
-        df_dict[i] =[]
-        
+    for name in column_names:
+        df_dict[name] =[]
+
     # Reading through all files in specefied folder   
     for file in files:
         df = pd.read_excel(file,sheet_name=1)
@@ -51,8 +50,9 @@ def Create_table(folder):
                 break
 
             else:
-                df_dict['Year'].append(int(df.iloc[3,3].strftime('%Y')))
-                df_dict['Carrier-Network'].append(df.iloc[1,3])
+                year = int(df.iloc[3,3].strftime('%Y'))
+                df_dict['Year'].append(2024 if year == 1900 else year)
+                df_dict['HIOS_ID'].append(df.iloc[11,(4+i)][:5])
                 df_dict['Carrier Type'].append('Competitor' if df.iloc[1,3] != 'Kaiser Foundation Health Plan, Inc.' else 'KP')
                 df_dict['Plan ID'].append(df.iloc[11,(4+i)])
                 df_dict['Region'].append(df.iloc[2,5])
@@ -62,22 +62,11 @@ def Create_table(folder):
                 df_dict['Plan Category'].append(df.iloc[14,(4+i)])
                 df_dict['Exchange Plan?'].append(df.iloc[16,(4+i)])
                 df_dict['Network'].append(df.iloc[15,(4+i)])
-                df_dict['Projected Member Months'].append(df.iloc[71,(4+i)])
                 df_dict['Benefits in Addition to EHB'].append(df.iloc[49,(4+i)])
                 df_dict['Av Metal Value'].append(df.iloc[13,(4+i)])
 
 
         # Converts the dictionary into a pandas dataframe            
-        urrt_df = pd.DataFrame(data = df_dict)
-        return urrt_df
-
-                    
-        # Converts the dictionary into a pandas dataframe            
-        df_final1 = pd.DataFrame(data = df_dict2)
-        df_final2 = pd.DataFrame(data = df_dict3)
-        #exports the dataframe into an excel spreadsheet
-        
-        # Export DataFrames to Excel using ExcelWriter
-        with pd.ExcelWriter(to_folder_path) as excel_writer:
-            df_final1.to_excel(excel_writer, sheet_name='Wrk2', index=False)
-            df_final2.to_excel(excel_writer, sheet_name='Wrk1', index=False)
+    urrt_df = pd.DataFrame(data = df_dict)
+    urrt_df['HIOS_ID'] = urrt_df['HIOS_ID'].astype(str)
+    return urrt_df

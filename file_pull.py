@@ -1,23 +1,59 @@
 
-def file_sparse(type='Rates Table Template', source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
+def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
     import pandas as pd
     import os
     import shutil
     import re
     
     new_folder_name = type + 's'
-    shutil.rmtree(os.path.join(target_folder,new_folder_name))
+    try:
+        shutil.rmtree(os.path.join(target_folder,new_folder_name))
+    except:
+        print('Folder not initiatilized')
     
     # Initial size counters
     total_tries = 0
     successes = 0
     failures = 0
 
-    # Define your regex pattern
-    regex_pattern = rf'\d{{4}}\s{type}.*'
+    if type == 'Rates Table Template':
+        # Define your regex pattern
+        regex_pattern = rf'\d{{4}}\s{type}.*'
 
-    # Need to specify sheetname to override the need for macros 
-    sheet_n = 'Rate Table' if type == 'Rates Table Template' else 0
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 'Rate Table'
+    elif type == 'Network Table Template':
+        # Define your regex pattern
+        regex_pattern = rf'\d{{4}}\s{type}.*'
+
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 'Network Table'
+    elif type == 'Service Area':
+        # Define your regex pattern
+        regex_pattern = rf'\d{{4}}\s{type}.*'
+
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 'Service Area'
+    elif type == 'Network Template':
+        # Define your regex pattern
+        regex_pattern = rf'\d{{4}}\s{type}.*'
+
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 'Networks'
+    elif type == 'Plans & Benefits Template':
+        # Define your regex pattern
+        regex_pattern = rf'\d{{4}}\s{type}.*'
+
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 'Benefits Package 1'
+    
+    elif type == 'URRT':
+        # Define your regex pattern
+        regex_pattern = '.*Instructions can be found in cells P1 through P6.*'
+
+        # Need to specify sheetname to override the need for macros 
+        sheet_n = 1
+
 
     # Function to process each file
     def process_file(file_path, target_folder, sheet_n):
@@ -70,6 +106,10 @@ def file_sparse(type='Rates Table Template', source_folder=r"Z:\Strategy Groups\
 
     # Summary of processing
     print(f'Done! Total files tried: {total_tries}, Successes: {successes}, Failures: {failures}')
+    return os.path.join(target_folder, new_folder_name)
 
-# Example call to the function
-file_sparse()
+
+def extract_all(types, source, destination):
+    for type in types:
+        file_sparse(type, source, destination) 
+
