@@ -1,65 +1,61 @@
+import pandas as pd
+import os
+import shutil
+import re
 
 def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
-    import pandas as pd
-    import os
-    import shutil
-    import re
-    
     new_folder_name = type + 's'
     try:
         shutil.rmtree(os.path.join(target_folder,new_folder_name))
-    except:
-        print('Folder not initiatilized')
+    except Exception as e:
+        print('Folder not initialized')
     
     # Initial size counters
     total_tries = 0
     successes = 0
     failures = 0
-
-    if type == 'Rates Table Template':
-        # Define your regex pattern
-        regex_pattern = rf'\d{{4}}\s{type}.*'
-
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 'Rate Table'
-    elif type == 'Network Table Template':
-        # Define your regex pattern
-        regex_pattern = rf'\d{{4}}\s{type}.*'
-
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 'Network Table'
-    elif type == 'Service Area':
-        # Define your regex pattern
-        regex_pattern = rf'\d{{4}}\s{type}.*'
-
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 'Service Area'
-    elif type == 'Network Template':
-        # Define your regex pattern
-        regex_pattern = rf'\d{{4}}\s{type}.*'
-
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 'Networks'
-    elif type == 'Plans & Benefits Template':
-        # Define your regex pattern
-        regex_pattern = rf'\d{{4}}\s{type}.*'
-
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 'Benefits Package 1'
     
-    elif type == 'URRT':
-        # Define your regex pattern
-        regex_pattern = '.*Instructions can be found in cells P1 through P6.*'
+    # Define your regex pattern based on the 'type'
+    regex_patterns = {
+        'Rates Table Template': rf'\d{{4}}\s{type}.*',
+        'Network Table Template': rf'\d{{4}}\s{type}.*',
+        'Service Area': rf'\d{{4}}\s{type}.*',
+        'Network Template': rf'\d{{4}}\s{type}.*',
+        'Plans & Benefits Template': rf'\d{{4}}\s{type}.*',
+        'URRT': '.*Instructions can be found in cells P1 through P6.*'
+    }
+    
+    # Corresponding sheet names or indexes
+    sheet_names = {
+        'Rates Table Template': 'Rate Table',
+        'Network Table Template': 'Network Table',
+        'Service Area': 'Service Area',
+        'Network Template': 'Networks',
+        'Plans & Benefits Template': 'Benefits Package 1',
+        'URRT': 1
+    }
+    
+    regex_pattern = regex_patterns[type]
+    sheet_n = sheet_names[type]
 
-        # Need to specify sheetname to override the need for macros 
-        sheet_n = 1
+    # Mapping to hold the most recent file info for each unique case
+    most_recent_files = {}
 
-
-    # Function to process each file
+    # Function to check and update the most recent file mapping
+    def check_and_update_most_recent(file_path, modification_time):
+        # Assuming the file's uniqueness can be determined from its path or a portion thereof
+        unique_identifier = os.path.basename(file_path)  # Adjust as necessary for uniqueness
+        if unique_identifier not in most_recent_files or modification_time > most_recent_files[unique_identifier]['modification_time']:
+            most_recent_files[unique_identifier] = {
+                'file_path': file_path,
+                'modification_time': modification_time
+            }
+    
+        # Function to process each file
     def process_file(file_path, target_folder, sheet_n):
         nonlocal total_tries, successes, failures  # Use nonlocal to modify these counters defined in the enclosing function
         
-        total_tries += 1  # Increment tries counter
+        
         try:
             # Read the file
             df = pd.read_excel(file_path, sheet_name=sheet_n, header=None)
@@ -94,22 +90,34 @@ def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates 
         except Exception as e:
             failures += 1  # Increment failures counter
 
-    # Iterate over the folders in the source folder
+    # Iterate over the folders and files, updating the most recent mapping
     for folder_name in os.listdir(source_folder):
         folder_path = os.path.join(source_folder, folder_name)
         if os.path.isdir(folder_path):
-            # Iterate over the files within each folder
             for filename in os.listdir(folder_path):
-                if filename.endswith('.xls') or filename.endswith('.xlsm'):  # Check for both .xls and .xlsm files
+                total_tries += 1  # Increment tries counter
+                if filename.endswith('.xls') or filename.endswith('.xlsm'):
                     file_path = os.path.join(folder_path, filename)
-                    process_file(file_path, target_folder, sheet_n)
+                    try:
+                        # Modification time for the current file
+                        modification_time = os.path.getmtime(file_path)
+                        # Read the file to check if it matches the regex
+                        df = pd.read_excel(file_path, sheet_name=sheet_n, header=None)
+                        cell_value = df.iloc[0, 0]
+                        if re.match(regex_pattern, str(cell_value)):
+                            check_and_update_most_recent(file_path, modification_time)
+                        else:
+                            failure +=1
+                    except Exception as e:
+                        failures += 1  # Increment failures counter
 
-    # Summary of processing
-    print(f'Done! Total files tried: {total_tries}, Successes: {successes}, Failures: {failures}')
+    # Now process only the most recent files
+    for file_info in most_recent_files.values():
+        # Extract the file_path from file_info dictionary
+        file_path = file_info['file_path']
+        # Call process_file with the correct arguments
+        process_file(file_path, target_folder, sheet_n)
+
+    # You might want to adjust the success, failure, and total tries counters accordingly
+    print(f'Done! Total files tried: {total_tries}, Successes: {successes}')
     return os.path.join(target_folder, new_folder_name)
-
-
-def extract_all(types, source, destination):
-    for type in types:
-        file_sparse(type, source, destination) 
-
