@@ -15,7 +15,7 @@ The purpose of this repository is to automate the rates analysis process for ind
 
 This repository contains Python scripts designed for specific parts of the rates analysis process. Below is a brief overview of the primary functions:
 
-### `file_sparse`
+### `Rates File Puller`
 
 - **Purpose**: To consolidate files based on specific types related to rate analysis.
 - **Parameters**:

@@ -5,7 +5,7 @@ import re
 
 files = ['Service Area', 'URRT', 'Rates Table Template', 'Network Template','Plans & Benefits Template']
 
-def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
+def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
     new_folder_name = type + 's'
     try:
         shutil.rmtree(os.path.join(target_folder,new_folder_name))
