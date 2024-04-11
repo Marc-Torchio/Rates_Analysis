@@ -33,6 +33,7 @@ This repository contains Python scripts designed for specific parts of the rates
   - `Network Template`
   - `Rates Table Template`
   - `Plans & Benefits Template`
+  - `Service Area Template`
 
 ## Dependencies
 
