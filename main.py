@@ -1,7 +1,10 @@
-import file_pull2
-import tab_
+import file_pull
 
+files = file_pull.files
+type = files[0]
+print(type)
 
+file_pull.file_sparse(type=type)
 
 
 

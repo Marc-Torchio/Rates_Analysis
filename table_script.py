@@ -21,6 +21,27 @@ def Rate_Table(folder):
     return rates
 
 
+# Plans and Benefit table creation
+def Plan_Table(folder):
+    import pandas as pd
+    import glob
+    import tab_iterator
+
+    # Creating a list of all file names within the specefied directory
+    files = glob.glob(f'{folder}/*.xlsm')
+
+    dfs = []
+    counter = 0
+    for file in files:
+        counter +=1
+        df = tab_iterator.concat_matching_sheets(file)
+        dfs.append(df)
+    
+    plans = pd.concat(dfs,ignore_index=True)
+    plans.reset_index()
+    print(f'Successfully pulled {counter} files')
+    return plans
+
 # URRT Table formation
 def URRT_Table(folder):
     

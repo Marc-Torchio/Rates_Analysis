@@ -3,6 +3,8 @@ import os
 import shutil
 import re
 
+files = ['Service Area', 'URRT', 'Rates Table Template', 'Network Template','Plans & Benefits Template']
+
 def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
     new_folder_name = type + 's'
     try:
@@ -18,20 +20,20 @@ def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates 
     # Define your regex pattern based on the 'type'
     regex_patterns = {
         'Rates Table Template': rf'\d{{4}}\s{type}.*',
-        'Network Table Template': rf'\d{{4}}\s{type}.*',
         'Service Area': rf'\d{{4}}\s{type}.*',
         'Network Template': rf'\d{{4}}\s{type}.*',
         'Plans & Benefits Template': rf'\d{{4}}\s{type}.*',
+        'Service Area': rf'\d{{4}}\s{type}.*',
         'URRT': '.*Instructions can be found in cells P1 through P6.*'
     }
     
     # Corresponding sheet names or indexes
     sheet_names = {
         'Rates Table Template': 'Rate Table',
-        'Network Table Template': 'Network Table',
         'Service Area': 'Service Area',
         'Network Template': 'Networks',
         'Plans & Benefits Template': 'Benefits Package 1',
+        'Service Area': 'Service Areas',
         'URRT': 1
     }
     
