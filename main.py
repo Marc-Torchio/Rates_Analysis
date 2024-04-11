@@ -2,7 +2,7 @@ import pandas as pd
 import table_script
 import file_pull
 
-['Service Area', 'URRT', 'Rates Table Template', 'Network Template','Plans & Benefits Template']
+
 def Comp_File_Pull():
     template_dict = {}
     for temp in file_pull.files:

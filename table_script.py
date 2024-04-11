@@ -24,7 +24,7 @@ def Rate_Table(folder):
 
 
 
-# Network table
+# Network Table
 def Network_Table(folder):
     import pandas as pd
     import glob
@@ -41,11 +41,45 @@ def Network_Table(folder):
         df = pd.read_excel(file,sheet_name='Networks',header=10)
         df = df.iloc[1:,:2]
         df = df.rename(columns=lambda x: re.sub(r'\*$', '', x))
-        df['HIOS_ID'] = HIOS_ID
+        df['HIOS_ID'] = HIOS_IDcols = df.columns.tolist()
+        cols = df.columns.tolist()
+        reorder_cols = [cols[-1]] + cols[:-1]
+        df = df[reorder_cols]
         dfs.append(df)
 
     rates = pd.concat(dfs,ignore_index=True)
     return rates 
+
+
+
+
+# Service Area Table
+def ServiceArea_Table(folder):
+    import pandas as pd
+    import glob
+    import re
+
+    # Creating a list of all file names within the specefied directory
+    files = glob.glob(f'{folder}/*.xls')
+
+    dfs = []
+
+    for file in files:
+        df = pd.read_excel(file,sheet_name='Service Areas')
+        HIOS_ID = df.iloc[4,1]
+        df = pd.read_excel(file,sheet_name='Service Areas',header=10)
+        df = df.iloc[1:,:5]
+        df = df.rename(columns=lambda x: re.sub(r'\*$', '', x))
+        df['HIOS_ID'] = HIOS_ID
+        cols = df.columns.tolist()
+        reorder_cols = [cols[-1]] + cols[:-1]
+        df = df[reorder_cols]
+        dfs.append(df)
+
+    ServiceArea = pd.concat(dfs,ignore_index=True)
+    return ServiceArea
+
+
 
 
 
