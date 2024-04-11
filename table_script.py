@@ -20,6 +20,29 @@ def Rate_Table(folder):
     rates = rates[rates.Age == 40].reset_index()
     return rates
 
+# Network table
+def Network_Table(folder):
+    import pandas as pd
+    import glob
+    import re
+
+    # Creating a list of all file names within the specefied directory
+    files = glob.glob(f'{folder}/*.xls')
+
+    dfs = []
+
+    for file in files:
+        df = pd.read_excel(file,sheet_name='Networks')
+        HIOS_ID = df.iloc[4,1]
+        df = pd.read_excel(file,sheet_name='Networks',header=10)
+        df = df.iloc[1:,:2]
+        df = df.rename(columns=lambda x: re.sub(r'\*$', '', x))
+        df['HIOS_ID'] = HIOS_ID
+        dfs.append(df)
+
+    rates = pd.concat(dfs,ignore_index=True)
+    return rates 
+
 
 # Plans and Benefit table creation
 def Plan_Table(folder):
