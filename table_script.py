@@ -55,6 +55,7 @@ def Plan_Table(folder):
     import pandas as pd
     import glob
     import tab_iterator
+    import re
 
     # Creating a list of all file names within the specefied directory
     files = glob.glob(f'{folder}/*.xlsm')
@@ -68,6 +69,8 @@ def Plan_Table(folder):
     
     plans = pd.concat(dfs,ignore_index=True)
     plans.reset_index()
+    plans = plans.rename(columns=lambda x: re.sub(r'\*$', '', x))
+    plans.rename(columns={df.columns[0]: 'Plan ID'}, inplace=True)
     print(f'Successfully pulled {counter} files')
     return plans
 
