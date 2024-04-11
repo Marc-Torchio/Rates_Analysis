@@ -46,4 +46,4 @@ This repository contains Python scripts designed for specific parts of the rates
 Ensure you have Python installed on your system. Clone this repository to your local machine:
 
 ```bash
-git clone git@github.com:yourusername/yourrepository.git
+git clone [git@github.com:yourusername/yourrepository.git](https://github.com/Marc-Torchio/Rates_Analysis.git)](https://github.com/Marc-Torchio/Rates_Analysis.git)
