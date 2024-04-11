@@ -23,17 +23,16 @@ This repository contains Python scripts designed for specific parts of the rates
   - `source_folder`: The directory where source files are located.
   - `target_folder`: The destination directory for processed files.
 
-### `Rate_Table`
+### `Tidy Table Creation`
 
 - **Purpose**: Creates a DataFrame from rate table files, tailored for further analysis.
 - **Parameters**:
   - `folder`: The directory containing rate table files.
-
-### `URRT_Table`
-
-- **Purpose**: Forms a comprehensive DataFrame from URRT table files.
-- **Parameters**:
-  - `folder`: The directory containing URRT files.
+- **Compatible Templates**
+  - `URRT`
+  - `Network Template`
+  - `Rates Table Template`
+  - `Plans & Benefits Template`
 
 ## Dependencies
 

@@ -109,9 +109,13 @@ def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates 
                         if re.match(regex_pattern, str(cell_value)):
                             check_and_update_most_recent(file_path, modification_time)
                         else:
-                            failure +=1
+                            failure +=1 # Increment failures counter
                     except Exception as e:
                         failures += 1  # Increment failures counter
+                else:
+                    failures += 1
+        else:
+            failures += 1
 
     # Now process only the most recent files
     for file_info in most_recent_files.values():
@@ -121,5 +125,5 @@ def file_sparse(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates 
         process_file(file_path, target_folder, sheet_n)
 
     # You might want to adjust the success, failure, and total tries counters accordingly
-    print(f'Done! Total files tried: {total_tries}, Successes: {successes}')
+    print(f'Done! Total files tried: {total_tries}, Successes: {successes}, Failures: {failures}')
     return os.path.join(target_folder, new_folder_name)

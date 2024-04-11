@@ -20,6 +20,10 @@ def Rate_Table(folder):
     rates = rates[rates.Age == 40].reset_index()
     return rates
 
+
+
+
+
 # Network table
 def Network_Table(folder):
     import pandas as pd
@@ -44,6 +48,8 @@ def Network_Table(folder):
     return rates 
 
 
+
+
 # Plans and Benefit table creation
 def Plan_Table(folder):
     import pandas as pd
@@ -64,6 +70,10 @@ def Plan_Table(folder):
     plans.reset_index()
     print(f'Successfully pulled {counter} files')
     return plans
+
+
+
+
 
 # URRT Table formation
 def URRT_Table(folder):
