@@ -31,4 +31,5 @@ if __name__ == '__main__':
     # Convert duration from seconds to minutes and seconds for easier reading
     minutes = int(duration / 60)
     seconds = int(duration % 60)
+    
     print(f"To complete the rates analysis table creation, it took {minutes} minutes and {seconds} seconds.")
