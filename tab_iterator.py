@@ -28,5 +28,17 @@ def concat_matching_sheets(excel_path):
 
     return concatenated_df
 
+def tab_creator(df):
+    # Path to save the Excel file
+    output_file = 'Flat_File.xlsx'
 
-
+    # Using ExcelWriter to write each group to a different sheet
+    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+        # Write the entire DataFrame to a sheet named 'Flat File'
+        df.to_excel(writer, sheet_name='Flat File', index=False)
+        # Get unique carriers and iterate over them
+        for carrier in df['Short Carrier'].unique():
+            # Filter the DataFrame based on the carrier
+            filtered_df = df[df['Short Carrier'] == carrier]
+            # Write the filtered DataFrame to a sheet named after the carrier
+            filtered_df.to_excel(writer, sheet_name=carrier, index=False)

@@ -85,7 +85,6 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
 
                 # Copy the file to the new folder, renaming it in the process
                 shutil.copy(file_path, destination_path)
-                print(f'Copied to: {new_folder_path}')
                 successes += 1  # Increment successes counter
             else:
                 # If the regex does not match, you can count it as a failure or just ignore
@@ -126,5 +125,5 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
         process_file(file_path, target_folder, sheet_n)
 
     # You might want to adjust the success, failure, and total tries counters accordingly
-    print(f'Done! Total files tried: {total_tries}, Successes: {successes}')
+    print(f'Done! Total files tried: {total_tries}, Successfully puled {successes} {type}s')
     return os.path.join(target_folder, new_folder_name)

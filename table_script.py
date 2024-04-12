@@ -109,7 +109,6 @@ def Plan_Table(folder):
     plans.reset_index()
     plans = plans.rename(columns=lambda x: re.sub(r'\*$', '', x))
     plans.rename(columns={df.columns[0]: 'Plan ID'}, inplace=True)
-    print(f'Successfully pulled {counter} files')
     return plans
 
 
@@ -149,7 +148,9 @@ def URRT_Table(folder, hard_state='GA', hard_year = 2024):
                 year = int(df.iloc[3,3].strftime('%Y'))
                 df_dict['Year'].append(hard_year if year == 1900 else year)
                 df_dict['HIOS_ID'].append(df.iloc[11,(4+i)][:5])
-                df_dict['Carrier Type'].append('Competitor' if df.iloc[1,3] != 'Kaiser Foundation Health Plan, Inc.' else 'KP')
+                carrier_info = df.iloc[1, 3]  # This might be a float or NaN
+                carrier_info_str = str(carrier_info) if not pd.isna(carrier_info) else ""
+                df_dict['Carrier Type'].append('Competitor' if "Kaiser" not in carrier_info_str else 'KP')
                 df_dict['Plan ID'].append(df.iloc[11,(4+i)])
                 df_dict['Region'].append(hard_state)
                 df_dict['Age'].append(40)                      # Keep age constant at 40 
@@ -193,6 +194,7 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     # Importing packages for streamlined use in main function call
     import pandas as pd
     import table_script
+    import tab_iterator
     
     # Load URRT table data
     df = table_script.URRT_Table(URRT_folder)
@@ -219,8 +221,10 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df = pd.merge(df, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
     new_df = pd.merge(new_df, plans, on='Plan ID', how='left')  # Merge with plans
     new_df = pd.merge(new_df, network_key, on=['HIOS_ID', 'Network ID'], how='left')  # merge with network keys
-    new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'left')
+    new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'inner')
     
     # Return the original df, names, plans, and network_key for further use or inspection
     new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
-    return new_df[['Year', 'Short Carrier', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
+    new_df = new_df[['Year', 'Short Carrier', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
+    tab_iterator.tab_creator(new_df)
+    return new_df
