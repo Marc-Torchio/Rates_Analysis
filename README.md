@@ -2,7 +2,7 @@
 
 ## Objective
 
-The purpose of this repository is to automate the rates analysis process for individual plans in rate analysis. It focuses on consolidating related files from providers, establishing tidy DataFrames for these files, and merging them where necessary. This automation facilitates the use of these consolidated data in dashboards and further analysis, streamlining what would otherwise be a manual and time-intensive process.
+The purpose of this repository is to automate the rates analysis process for filed healthcare plans within the individual and small group LOBs. It focuses on consolidating related files from providers, establishing tidy DataFrames for these files, and merging them where necessary. This automation facilitates using these consolidated data in dashboards and further analysis, streamlining what would otherwise be a manual and time-intensive process.
 
 ## Features
 
