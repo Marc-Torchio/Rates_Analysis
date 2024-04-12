@@ -117,11 +117,12 @@ def Plan_Table(folder):
 
 
 # URRT Table formation
-def URRT_Table(folder):
+def URRT_Table(folder, hard_state='GA', hard_year = 2024):
     
     # Import needed packages 
     import pandas as pd
     from pathlib import Path
+    import numpy as np
     
     # assign directory
     directory = folder
@@ -146,11 +147,11 @@ def URRT_Table(folder):
 
             else:
                 year = int(df.iloc[3,3].strftime('%Y'))
-                df_dict['Year'].append(2024 if year == 1900 else year)
+                df_dict['Year'].append(hard_year if year == 1900 else year)
                 df_dict['HIOS_ID'].append(df.iloc[11,(4+i)][:5])
                 df_dict['Carrier Type'].append('Competitor' if df.iloc[1,3] != 'Kaiser Foundation Health Plan, Inc.' else 'KP')
                 df_dict['Plan ID'].append(df.iloc[11,(4+i)])
-                df_dict['Region'].append(df.iloc[2,5])
+                df_dict['Region'].append(hard_state)
                 df_dict['Age'].append(40)                      # Keep age constant at 40 
                 df_dict['Plan Name'].append(df.iloc[10,(4+i)])
                 df_dict['Metal Tier'].append(df.iloc[12,(4+i)])
@@ -159,11 +160,16 @@ def URRT_Table(folder):
                 df_dict['Network'].append(df.iloc[15,(4+i)])
                 df_dict['Benefits in Addition to EHB'].append(df.iloc[49,(4+i)])
                 df_dict['Av Metal Value'].append(df.iloc[13,(4+i)])
+                df_dict['HRA Flag'] = 'No'
+                df_dict['Narrow/Broad Network'] = 'N/A'
+                df_dict['Relevant'] = "Yes "
 
 
         # Converts the dictionary into a pandas dataframe            
     urrt_df = pd.DataFrame(data = df_dict)
     urrt_df['HIOS_ID'] = urrt_df['HIOS_ID'].astype(str)
+    urrt_df['On/Off Exchange'] = np.where(urrt_df['Exchange Plan?'] == 'Yes', 'On', 'Off')
+    urrt_df.drop('Exchange Plan?',axis=1, inplace=True)
     return urrt_df
 
 
@@ -216,4 +222,5 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'left')
     
     # Return the original df, names, plans, and network_key for further use or inspection
-    return new_df
+    new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
+    return new_df[['Year', 'Short Carrier', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
