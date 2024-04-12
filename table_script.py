@@ -17,7 +17,7 @@ def Rate_Table(folder):
         dfs.append(df)
 
     rates = pd.concat(dfs,ignore_index=True)
-    rates = rates[rates.Age == 40].reset_index()
+    rates = rates[rates.Age == 40].reset_index(drop=True)
     return rates
 
 
@@ -41,7 +41,7 @@ def Network_Table(folder):
         df = pd.read_excel(file,sheet_name='Networks',header=10)
         df = df.iloc[1:,:2]
         df = df.rename(columns=lambda x: re.sub(r'\*$', '', x))
-        df['HIOS_ID'] = HIOS_IDcols = df.columns.tolist()
+        df['HIOS_ID'] = HIOS_ID
         cols = df.columns.tolist()
         reorder_cols = [cols[-1]] + cols[:-1]
         df = df[reorder_cols]
@@ -169,9 +169,10 @@ def URRT_Table(folder):
 
 
 
-def individual_flatfile(URRT_folder= r'C:\Users\A654219\Documents\GA\URRTs',
+def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
                         plans_folder= r"C:\Users\A654219\Documents\GA\Plans & Benefits Templates",
-                        name_mapping_path= r"C:\Users\A654219\Documents\GA\name_mapping.xlsx"):
+                        name_mapping_path= r"C:\Users\A654219\Documents\GA\name_mapping.xlsx",
+                        rate_table_path = r"C:\Users\A654219\Documents\GA\Rates Table Templates"):
     """
     Process individual flatfiles by merging various data sources into a comprehensive DataFrame.
 
@@ -201,10 +202,18 @@ def individual_flatfile(URRT_folder= r'C:\Users\A654219\Documents\GA\URRTs',
     # Load Network table data
     network_key = table_script.Network_Table(r"C:\Users\A654219\Documents\GA\Network Templates")
     
+    # Load rate table data
+    rates = table_script.Rate_Table(rate_table_path)
+    rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area [1-3]\b',na=False)].reset_index(drop=True)
+    columns = rates.columns.tolist()
+    rates = rates[columns[:2] + [columns[-1]]]
+    
+    
     # Merge loaded dataframes on specified keys, using 'left' join to preserve the left DataFrame's rows
     new_df = pd.merge(df, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
     new_df = pd.merge(new_df, plans, on='Plan ID', how='left')  # Merge with plans
-    new_df = pd.merge(new_df, network_key, on=['HIOS_ID', 'Network ID'], how='left')  # Finally, merge with network keys
+    new_df = pd.merge(new_df, network_key, on=['HIOS_ID', 'Network ID'], how='left')  # merge with network keys
+    new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'left')
     
     # Return the original df, names, plans, and network_key for further use or inspection
     return new_df
