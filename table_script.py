@@ -178,7 +178,7 @@ def URRT_Table(folder, hard_state='GA', hard_year = 2024):
 def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
                         plans_folder= r"C:\Users\A654219\Documents\GA\Plans & Benefits Templates",
                         name_mapping_path= r"C:\Users\A654219\Documents\GA\name_mapping.xlsx",
-                        rate_table_path = r"C:\Users\A654219\Documents\GA\Rates Table Templates"):
+                        rates_folder = r"C:\Users\A654219\Documents\GA\Rates Table Templates"):
     """
     Process individual flatfiles by merging various data sources into a comprehensive DataFrame.
 
@@ -209,7 +209,7 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     network_key = table_script.Network_Table(r"C:\Users\A654219\Documents\GA\Network Templates")
     
     # Load rate table data
-    rates = table_script.Rate_Table(rate_table_path)
+    rates = table_script.Rate_Table(rates_folder)
     rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area [1-3]\b',na=False)].reset_index(drop=True)
     columns = rates.columns.tolist()
     rates = rates[columns[:2] + [columns[-1]]]

@@ -1,7 +1,7 @@
+import timeit
 import pandas as pd
 import table_script
 import file_pull
-
 
 def Comp_File_Pull():
     template_dict = {}
@@ -10,10 +10,23 @@ def Comp_File_Pull():
         template_dict[temp] = new_folder
     return template_dict
 
-templates = Comp_File_Pull()
+def comp_file_pull_wrapper():
+    return Comp_File_Pull()
 
-rates_analysis = table_script.individual_flatfile(URRT_folder = templates['URRT'],
-                        plans_folder = templates['Plans & Benefits Template'],
-                        name_mapping_path= r"C:\Users\A654219\Documents\GA\name_mapping.xlsx")
+def rates_analysis_wrapper():
+    templates = comp_file_pull_wrapper()  # Call the function that fetches templates
+    rates_analysis = table_script.individual_flatfile(
+        URRT_folder=templates['URRT'],
+        plans_folder=templates['Plans & Benefits Template'],
+        rates_folder=templates['Rates Table Template']
+    )
+    print(rates_analysis.head())
 
+if __name__ == '__main__':
+    # Timing the complete operation of pulling data and processing it
+    duration = timeit.timeit('rates_analysis_wrapper()', globals=globals(), number=1)
 
+    # Convert duration from seconds to minutes and seconds for easier reading
+    minutes = int(duration / 60)
+    seconds = int(duration % 60)
+    print(f"To complete the rates analysis table creation, it took {minutes} minutes and {seconds} seconds.")
