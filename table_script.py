@@ -24,7 +24,7 @@ def Rate_Table(folder):
 
 
 
-# Network Table
+# Network Tablem 
 def Network_Table(folder):
     import pandas as pd
     import glob
@@ -80,7 +80,7 @@ def ServiceArea_Table(folder):
     names = pd.read_excel(r"C:\Users\A654219\Documents\GA\name_mapping.xlsx")
     names['HIOS_ID'] = names['HIOS_ID'].astype(str)  # Ensure HIOS_ID is treated as a string for consistent merging
     ServiceArea = pd.merge(ServiceArea, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
-    ServiceArea = ServiceArea[['Short Carrier','Service Area ID', 'Service Area Name', 'State','County Name', 'County', 'Partial County']]
+    ServiceArea = ServiceArea[['HIOS_ID','Short Carrier','Service Area ID', 'Service Area Name', 'State','County Name', 'County', 'Partial County']]
     return ServiceArea
 
 
