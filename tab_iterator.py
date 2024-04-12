@@ -35,10 +35,12 @@ def tab_creator(df):
     # Using ExcelWriter to write each group to a different sheet
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
         # Write the entire DataFrame to a sheet named 'Flat File'
-        df.to_excel(writer, sheet_name='Flat File', index=False)
+        sorted_df = df.sort_values(by=['Short Carrier', 'Rating Area ID'], ascending=[True,True])
+        sorted_df.to_excel(writer, sheet_name='Flat File', index=False)
         # Get unique carriers and iterate over them
         for carrier in df['Short Carrier'].unique():
             # Filter the DataFrame based on the carrier
             filtered_df = df[df['Short Carrier'] == carrier]
+            sorted_df = filtered_df.sort_values(by='Rating Area ID', ascending=[False])
             # Write the filtered DataFrame to a sheet named after the carrier
-            filtered_df.to_excel(writer, sheet_name=carrier, index=False)
+            sorted_df.to_excel(writer, sheet_name=carrier, index=False)

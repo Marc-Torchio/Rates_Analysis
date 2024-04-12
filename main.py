@@ -2,6 +2,8 @@ import timeit
 import pandas as pd
 import table_script
 import file_pull
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 def Comp_File_Pull():
     template_dict = {}

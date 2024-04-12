@@ -195,6 +195,7 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     import pandas as pd
     import table_script
     import tab_iterator
+
     
     # Load URRT table data
     df = table_script.URRT_Table(URRT_folder)
@@ -225,6 +226,6 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     
     # Return the original df, names, plans, and network_key for further use or inspection
     new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
-    new_df = new_df[['Year', 'Short Carrier', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
+    new_df = new_df[['Year', 'Short Carrier', 'Network Name', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
     tab_iterator.tab_creator(new_df)
     return new_df

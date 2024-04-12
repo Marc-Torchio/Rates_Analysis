@@ -6,6 +6,8 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
     import os
     import shutil
     import re
+    import warnings
+    warnings.filterwarnings("ignore", category=UserWarning)
     
     new_folder_name = type + 's'
     try:
