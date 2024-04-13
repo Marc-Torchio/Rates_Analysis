@@ -33,7 +33,7 @@ def concat_matching_sheets(excel_path):
 
 
 
-def tab_creator(df):
+def tab_creator(df, area_3):
     # Path to save the Excel file
     output_file = 'Flat_File.xlsx'
 
@@ -41,7 +41,9 @@ def tab_creator(df):
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
         # Write the entire DataFrame to a sheet named 'Flat File'
         sorted_df = df.sort_values(by=['Short Carrier', 'Rating Area ID'], ascending=[True,True])
+        area_3_sorted = area_3.sort_values(by=['Short Carrier', 'Rating Area ID'], ascending=[True,True])
         sorted_df.to_excel(writer, sheet_name='Flat File', index=False)
+        area_3_sorted.to_excel(writer, sheet_name='Area 3', index=False)
         # Get unique carriers and iterate over them
         for carrier in df['Short Carrier'].unique():
             # Filter the DataFrame based on the carrier

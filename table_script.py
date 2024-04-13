@@ -240,6 +240,8 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     # Adjust Carrier-Network col as needed by region
     if new_df['Region'][0] == 'GA':
         new_df = ra.GA_Carrier_Network_adjustment(new_df)
+        area_3 = new_df
+    
     
     # Map Rate Areas and merge based off carrier-network col
     new_df = new_df.drop('Rating Area ID', axis=1)
@@ -247,7 +249,13 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     # Cleaning Rating Area ID to match previous years
     new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
     
-    new_df = new_df[['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
-    tab_iterator.tab_creator(new_df)
+    # Pulling relevant col names
+    col_names = ['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']
+    new_df = new_df[col_names]
+    area_3 = area_3[col_names]
+    # Adjusting Rate Area for region specific nuances (GA)
+    new_df = ra.GA_Area_adjustment(new_df)
+    
+    tab_iterator.tab_creator(new_df, area_3)
     return new_df
 

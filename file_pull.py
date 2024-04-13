@@ -127,5 +127,5 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
         process_file(file_path, target_folder, sheet_n)
 
     # You might want to adjust the success, failure, and total tries counters accordingly
-    print(f'Done! Total files tried: {total_tries}, Successfully puled {successes} {type}s')
+    print(f'Done! Total files tried: {total_tries}, Successfully pulled: {successes} {type}s')
     return os.path.join(target_folder, new_folder_name)
