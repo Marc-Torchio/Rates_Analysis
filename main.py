@@ -12,9 +12,11 @@ def Comp_File_Pull():
         template_dict[temp] = new_folder
     return template_dict
 
+def comp_file_pull_wrapper():
+    return Comp_File_Pull()
 
 def rates_analysis_wrapper():
-    templates = Comp_File_Pull()  # Call the Comp_file function that fetches templates
+    templates = comp_file_pull_wrapper() # Call the Comp_file function that fetches templates
     rates_analysis = table_script.individual_flatfile(
         URRT_folder=templates['URRT'],
         plans_folder=templates['Plans & Benefits Template'],

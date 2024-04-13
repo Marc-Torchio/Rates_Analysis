@@ -178,8 +178,9 @@ def URRT_Table(folder, hard_state='GA', hard_year = 2024):
 
 def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
                         plans_folder= r"C:\Users\A654219\Documents\GA\Plans & Benefits Templates",
-                        name_mapping_path= r"C:\Users\A654219\Documents\GA\name_mapping.xlsx",
-                        rates_folder = r"C:\Users\A654219\Documents\GA\Rates Table Templates"):
+                        name_mapping_path= r"C:\Users\A654219\Documents\GA\Regional_References\name_mapping.xlsx",
+                        rates_folder = r"C:\Users\A654219\Documents\GA\Rates Table Templates",
+                        ratearea = r'C:\Users\A654219\Documents\GA\Regional_References\GA_RateAreas.xlsx'):
     """
     Process individual flatfiles by merging various data sources into a comprehensive DataFrame.
 
@@ -195,6 +196,7 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     import pandas as pd
     import table_script
     import tab_iterator
+    import regional_adjustments as ra
 
     
     # Load URRT table data
@@ -213,10 +215,13 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     
     # Load rate table data
     rates = table_script.Rate_Table(rates_folder)
-    rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area [1-3]\b',na=False)].reset_index(drop=True)
-    columns = rates.columns.tolist()
-    rates = rates[columns[:2] + [columns[-1]]]
+    rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area 3\b',na=False)].reset_index(drop=True)
+    rates = rates[['Plan ID','Rating Area ID', 'Individual Rate']]
     
+    # Load rate area mapping
+    rate_area = pd.read_excel(ratearea)
+    
+
     
     # Merge loaded dataframes on specified keys, using 'left' join to preserve the left DataFrame's rows
     new_df = pd.merge(df, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
@@ -224,8 +229,22 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df = pd.merge(new_df, network_key, on=['HIOS_ID', 'Network ID'], how='left')  # merge with network keys
     new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'inner')
     
-    # Return the original df, names, plans, and network_key for further use or inspection
+    
+    
+    
+    # Establish Baseline Carrier-Network col
+    new_df['Carrier-Network'] = new_df.apply(lambda row: f"{row['Short Carrier']} - {row['Network']}", axis=1)
+    
+    # Adjust Carrier-Network col as needed by region
+    if new_df['Region'][0] == 'GA':
+        new_df = ra.GA_Carrier_Network_adjustment(new_df)
+    
+    # Map Rate Areas and merge based off carrier-network col
+    new_df = new_df.drop('Rating Area ID', axis=1)
+    new_df = pd.merge(new_df, rate_area, on='Carrier-Network',how='left')
+    # Cleaning Rating Area ID to match previous years
     new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
-    new_df = new_df[['Year', 'Short Carrier', 'Network Name', 'Carrier Type', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
+    
+    new_df = new_df[['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
     tab_iterator.tab_creator(new_df)
     return new_df
