@@ -176,6 +176,7 @@ def URRT_Table(folder, hard_state='GA', hard_year = 2024):
 
 
 
+
 def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
                         plans_folder= r"C:\Users\A654219\Documents\GA\Plans & Benefits Templates",
                         name_mapping_path= r"C:\Users\A654219\Documents\GA\Regional_References\name_mapping.xlsx",
@@ -188,9 +189,10 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     - URRT_folder (str): Path to the folder containing URRT files.
     - plans_folder (str): Path to the folder containing Plans & Benefits Templates.
     - name_mapping_path (str): Path to the Excel file containing name mappings.
+    - ratearea (str): path to the Excel file containing the rate area to carrier-network mappings.
 
     Returns:
-    - The merged dataframe combining URRT data, Network ID data, Network Name data, and  Rates data
+    - The merged dataframe combining URRT data, Network ID data, Network Name data, and Rates data accross the specified Rating Areas
     """ 
     # Importing packages for streamlined use in main function call
     import pandas as pd
@@ -248,3 +250,4 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df = new_df[['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']]
     tab_iterator.tab_creator(new_df)
     return new_df
+
