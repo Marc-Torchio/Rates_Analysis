@@ -103,13 +103,13 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
                 if filename.endswith('.xls') or filename.endswith('.xlsm'):
                     file_path = os.path.join(folder_path, filename)
                     try:
-                        # Modification time for the current file
-                        modification_time = os.path.getmtime(file_path)
+                        # Creation time for the current file
+                        creation_time = os.path.getctime(file_path)
                         # Read the file to check if it matches the regex
                         df = pd.read_excel(file_path, sheet_name=sheet_n, header=None)
                         cell_value = df.iloc[0, 0]
                         if re.match(regex_pattern, str(cell_value)):
-                            check_and_update_most_recent(file_path, modification_time)
+                            check_and_update_most_recent(file_path, creation_time)
                         else:
                             failure +=1 # Increment failures counter
                     except Exception as e:
