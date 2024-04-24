@@ -39,6 +39,7 @@ This repository contains Python scripts designed for specific parts of the rates
 
 - Python 3.x
 - pandas
+- numpy
 - os, shutil, re, glob, pathlib (standard library modules)
 
 ## Setup and Installation
