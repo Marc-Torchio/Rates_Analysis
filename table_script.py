@@ -197,7 +197,6 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     # Importing packages for streamlined use in main function call
     import pandas as pd
     import table_script
-    import tab_iterator
     import regional_adjustments as ra
 
     
@@ -222,7 +221,6 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     
     # Load rate area mapping
     rate_area = pd.read_excel(ratearea)
-    
 
     
     # Merge loaded dataframes on specified keys, using 'left' join to preserve the left DataFrame's rows
@@ -232,30 +230,17 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df = pd.merge(new_df, rates, on= 'Plan ID', how = 'inner')
     
     
-    
-    
     # Establish Baseline Carrier-Network col
     new_df['Carrier-Network'] = new_df.apply(lambda row: f"{row['Short Carrier']} - {row['Network']}", axis=1)
     
     # Adjust Carrier-Network col as needed by region
     if new_df['Region'][0] == 'GA':
-        new_df = ra.GA_Carrier_Network_adjustment(new_df)
-        area_3 = new_df
-    
-    
-    # Map Rate Areas and merge based off carrier-network col
-    new_df = new_df.drop('Rating Area ID', axis=1)
-    new_df = pd.merge(new_df, rate_area, on='Carrier-Network',how='left')
-    # Cleaning Rating Area ID to match previous years
-    new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
-    
-    # Pulling relevant col names
-    col_names = ['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']
-    new_df = new_df[col_names]
-    area_3 = area_3[col_names]
-    # Adjusting Rate Area for region specific nuances (GA)
-    new_df = ra.GA_Area_adjustment(new_df)
-    
-    tab_iterator.tab_creator(new_df, area_3)
-    return new_df
+        new_df = ra.GA_flatfile_creation(new_df,rate_area)
+        return new_df
+    else:
+        new_df = new_df.drop('Rating Area ID', axis=1)
+        new_df = pd.merge(new_df, rate_area, on='Carrier-Network',how='left')
+        # Cleaning Rating Area ID to match previous years
+        new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
+        return new_df
 

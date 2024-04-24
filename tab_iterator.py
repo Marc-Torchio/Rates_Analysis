@@ -33,7 +33,7 @@ def concat_matching_sheets(excel_path):
 
 
 
-def tab_creator(df, area_3):
+def GA_tab_creator(df, area_3):
     # Path to save the Excel file
     output_file = 'Flat_File.xlsx'
 

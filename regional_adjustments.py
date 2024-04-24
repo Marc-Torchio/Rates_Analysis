@@ -1,6 +1,5 @@
 def GA_Carrier_Network_adjustment(new_df):
     import numpy as np
-    import pandas as pd
 
     # Define conditions using the correct DataFrame (new_df, not df)
     conditions = [
@@ -39,3 +38,26 @@ def GA_Area_adjustment(df):
                       (df['Carrier-Network'] == 'BCBS - Pathway X HMO'))]
     
     return df_adj
+
+
+def GA_flatfile_creation(df, rate_area):
+    import tab_iterator
+    import pandas as pd
+    new_df = GA_Carrier_Network_adjustment(df)
+    area_3 = new_df
+
+    # Map Rate Areas and merge based off carrier-network col
+    new_df = new_df.drop('Rating Area ID', axis=1)
+    new_df = pd.merge(new_df, rate_area, on='Carrier-Network',how='left')
+    # Cleaning Rating Area ID to match previous years
+    new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
+
+    # Pulling relevant col names
+    col_names = ['Year', 'Carrier-Network', 'Short Carrier', 'Carrier Type', 'Carrier', 'Plan ID', 'Rating Area ID', 'Region', 'Age', 'Plan Name', 'HRA Flag', 'Metal Tier', 'On/Off Exchange', 'Network','Narrow/Broad Network','Relevant' ,'Individual Rate']
+    new_df = new_df[col_names]
+    area_3 = area_3[col_names]
+    # Adjusting Rate Area for region specific nuances (GA)
+    new_df = GA_Area_adjustment(new_df)
+
+    tab_iterator.GA_tab_creator(new_df, area_3)
+    return new_df

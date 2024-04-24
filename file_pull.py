@@ -47,13 +47,13 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
     most_recent_files = {}
 
     # Function to check and update the most recent file mapping
-    def check_and_update_most_recent(file_path, modification_time):
-        # Assuming the file's uniqueness can be determined from its path or a portion thereof
-        unique_identifier = os.path.basename(file_path)  # Adjust as necessary for uniqueness
-        if unique_identifier not in most_recent_files or modification_time > most_recent_files[unique_identifier]['modification_time']:
+    def check_and_update_most_recent(file_path, creation_time):
+        # Assuming the file's uniqueness can be determined from its path
+        unique_identifier = os.path.basename(file_path)  
+        if unique_identifier not in most_recent_files or creation_time > most_recent_files[unique_identifier]['creation_time']:
             most_recent_files[unique_identifier] = {
                 'file_path': file_path,
-                'modification_time': modification_time
+                'creation_time': creation_time
             }
     
         # Function to process each file

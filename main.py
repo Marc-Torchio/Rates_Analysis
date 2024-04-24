@@ -1,9 +1,10 @@
 import timeit
-import pandas as pd
 import table_script
 import file_pull
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
+
+
 
 def Comp_File_Pull():
     template_dict = {}
@@ -23,6 +24,8 @@ def rates_analysis_wrapper():
         rates_folder=templates['Rates Table Template']
     )
     print(rates_analysis.head())
+
+
 
 if __name__ == '__main__':
     # Timing the complete operation of pulling data and processing it
