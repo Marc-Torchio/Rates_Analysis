@@ -1,7 +1,13 @@
+# Importing dependent packages 
 import timeit
+import warnings
+
+# Importing necessary scripts from current repo
 import table_script
 import file_pull
-import warnings
+
+
+# Removing warngings 
 warnings.filterwarnings("ignore", category=UserWarning)
 
 

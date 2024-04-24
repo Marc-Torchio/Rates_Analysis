@@ -1,13 +1,12 @@
+import os
+import shutil
+import re
+import pandas as pd
+
+
 files = ['Service Area', 'URRT', 'Rates Table Template', 'Network Template','Plans & Benefits Template']
 
 def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\Rates Analysis\2024\GA\Preliminary Rates Analysis\Rate Filings", target_folder=r"C:\Users\A654219\Documents\GA"):
-    
-    import pandas as pd
-    import os
-    import shutil
-    import re
-    import warnings
-    warnings.filterwarnings("ignore", category=UserWarning)
     
     new_folder_name = type + 's'
     try:
@@ -50,11 +49,15 @@ def Rates_File_Puller(type, source_folder=r"Z:\Strategy Groups\Individual Plans\
     def check_and_update_most_recent(file_path, creation_time):
         # Assuming the file's uniqueness can be determined from its path
         unique_identifier = os.path.basename(file_path)  
-        if unique_identifier not in most_recent_files or creation_time > most_recent_files[unique_identifier]['creation_time']:
+        if unique_identifier not in most_recent_files:
             most_recent_files[unique_identifier] = {
                 'file_path': file_path,
-                'creation_time': creation_time
-            }
+                'creation_time': creation_time}
+        elif creation_time > most_recent_files[unique_identifier]['creation_time']:
+            print(f'Duplicate file found and replaced by more recent version: {file_path}')
+            most_recent_files[unique_identifier] = {
+                'file_path': file_path,
+                'creation_time': creation_time}
     
         # Function to process each file
     def process_file(file_path, target_folder, sheet_n):

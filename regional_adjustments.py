@@ -1,5 +1,8 @@
+import pandas as pd
+import tab_iterator
+import numpy as np 
+
 def GA_Carrier_Network_adjustment(new_df):
-    import numpy as np
 
     # Define conditions using the correct DataFrame (new_df, not df)
     conditions = [
@@ -41,8 +44,7 @@ def GA_Area_adjustment(df):
 
 
 def GA_flatfile_creation(df, rate_area):
-    import tab_iterator
-    import pandas as pd
+
     new_df = GA_Carrier_Network_adjustment(df)
     area_3 = new_df
 

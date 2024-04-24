@@ -1,8 +1,13 @@
+import glob
+import tab_iterator
+import regional_adjustments as ra
+import pandas as pd
+from pathlib import Path
+import numpy as np 
+import re 
+
 # Rate table creation
 def Rate_Table(folder):
-    import pandas as pd
-    import glob
-    import re
 
     # Creating a list of all file names within the specefied directory
     files = glob.glob(f'{folder}/*.xls')
@@ -24,11 +29,8 @@ def Rate_Table(folder):
 
 
 
-# Network Tablem 
+# Network Table
 def Network_Table(folder):
-    import pandas as pd
-    import glob
-    import re
 
     # Creating a list of all file names within the specefied directory
     files = glob.glob(f'{folder}/*.xls')
@@ -55,9 +57,6 @@ def Network_Table(folder):
 
 # Service Area Table
 def ServiceArea_Table(folder):
-    import pandas as pd
-    import glob
-    import re
 
     # Creating a list of all file names within the specefied directory
     files = glob.glob(f'{folder}/*.xls')
@@ -90,10 +89,6 @@ def ServiceArea_Table(folder):
 
 # Plans and Benefit table creation
 def Plan_Table(folder):
-    import pandas as pd
-    import glob
-    import tab_iterator
-    import re
 
     # Creating a list of all file names within the specefied directory
     files = glob.glob(f'{folder}/*.xlsm')
@@ -117,11 +112,6 @@ def Plan_Table(folder):
 
 # URRT Table formation
 def URRT_Table(folder, hard_state='GA', hard_year = 2024):
-    
-    # Import needed packages 
-    import pandas as pd
-    from pathlib import Path
-    import numpy as np
     
     # assign directory
     directory = folder
@@ -177,10 +167,11 @@ def URRT_Table(folder, hard_state='GA', hard_year = 2024):
 
 
 
-def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
-                        plans_folder= r"C:\Users\A654219\Documents\GA\Plans & Benefits Templates",
+def individual_flatfile(URRT_folder,
+                        plans_folder,
+                        rates_folder,
+                        LOB = 'ind',
                         name_mapping_path= r"C:\Users\A654219\Documents\GA\Regional_References\name_mapping.xlsx",
-                        rates_folder = r"C:\Users\A654219\Documents\GA\Rates Table Templates",
                         ratearea = r'C:\Users\A654219\Documents\GA\Regional_References\GA_RateAreas.xlsx'):
     """
     Process individual flatfiles by merging various data sources into a comprehensive DataFrame.
@@ -194,28 +185,23 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     Returns:
     - The merged dataframe combining URRT data, Network ID data, Network Name data, and Rates data accross the specified Rating Areas
     """ 
-    # Importing packages for streamlined use in main function call
-    import pandas as pd
-    import table_script
-    import regional_adjustments as ra
-
     
     # Load URRT table data
-    df = table_script.URRT_Table(URRT_folder)
+    df = URRT_Table(URRT_folder)
     
     # Load and prepare name mappings
     names = pd.read_excel(name_mapping_path)
     names['HIOS_ID'] = names['HIOS_ID'].astype(str)  # Ensure HIOS_ID is treated as a string for consistent merging
     
     # Load and filter Plans table data
-    plans = table_script.Plan_Table(plans_folder)
+    plans = Plan_Table(plans_folder)
     plans = plans[['Plan ID', 'Network ID']]  # Keep only the necessary columns
     
     # Load Network table data
-    network_key = table_script.Network_Table(r"C:\Users\A654219\Documents\GA\Network Templates")
+    network_key = Network_Table(r"C:\Users\A654219\Documents\GA\Network Templates")
     
     # Load rate table data
-    rates = table_script.Rate_Table(rates_folder)
+    rates = Rate_Table(rates_folder)
     rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area 3\b',na=False)].reset_index(drop=True)
     rates = rates[['Plan ID','Rating Area ID', 'Individual Rate']]
     
@@ -223,7 +209,7 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     rate_area = pd.read_excel(ratearea)
 
     
-    # Merge loaded dataframes on specified keys, using 'left' join to preserve the left DataFrame's rows
+    # Merge loaded dataframes on specified keys, using 'left' join to preserve the left DataFrame's rows (inner for rates merge)
     new_df = pd.merge(df, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
     new_df = pd.merge(new_df, plans, on='Plan ID', how='left')  # Merge with plans
     new_df = pd.merge(new_df, network_key, on=['HIOS_ID', 'Network ID'], how='left')  # merge with network keys
@@ -234,12 +220,11 @@ def individual_flatfile(URRT_folder= r"C:\Users\A654219\Documents\GA\URRTs",
     new_df['Carrier-Network'] = new_df.apply(lambda row: f"{row['Short Carrier']} - {row['Network']}", axis=1)
     
     # Adjust Carrier-Network col as needed by region
-    if new_df['Region'][0] == 'GA':
+    if LOB == 'ind' and new_df['Region'][0] == 'GA':
         new_df = ra.GA_flatfile_creation(new_df,rate_area)
         return new_df
     else:
         new_df = new_df.drop('Rating Area ID', axis=1)
-        new_df = pd.merge(new_df, rate_area, on='Carrier-Network',how='left')
         # Cleaning Rating Area ID to match previous years
         new_df['Rating Area ID'] = new_df['Rating Area ID'].str.replace('Rating Area', 'Area')
         return new_df
