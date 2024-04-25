@@ -53,9 +53,12 @@ def Network_Table(folder):
     return rates 
 
 
+"""
+Service Area templates are not needed in rates analysis 
+code chunk will be removed in future iterations
+"""
 
-
-# Service Area Table
+# Service Area Table 
 def ServiceArea_Table(folder):
 
     # Creating a list of all file names within the specefied directory
@@ -76,7 +79,7 @@ def ServiceArea_Table(folder):
         
 
     ServiceArea = pd.concat(dfs,ignore_index=True)
-    names = pd.read_excel(r"C:\Users\A654219\Documents\GA\name_mapping.xlsx")
+    names = pd.read_excel(r"C:\Users\A654219\Documents\GA\Regional_References\name_mapping.xlsx")
     names['HIOS_ID'] = names['HIOS_ID'].astype(str)  # Ensure HIOS_ID is treated as a string for consistent merging
     ServiceArea = pd.merge(ServiceArea, names, on='HIOS_ID', how='left')  # Merge URRT data with name mappings
     ServiceArea = ServiceArea[['HIOS_ID','Short Carrier','Service Area ID', 'Service Area Name', 'State','County Name', 'County', 'Partial County']]
@@ -172,7 +175,8 @@ def individual_flatfile(URRT_folder,
                         rates_folder,
                         LOB = 'ind',
                         name_mapping_path= r"C:\Users\A654219\Documents\GA\Regional_References\name_mapping.xlsx",
-                        ratearea = r'C:\Users\A654219\Documents\GA\Regional_References\GA_RateAreas.xlsx'):
+                        ratearea = r'C:\Users\A654219\Documents\GA\Regional_References\GA_RateAreas.xlsx',
+                        network_folder = r"C:\Users\A654219\Documents\GA\Network Templates" ):
     """
     Process individual flatfiles by merging various data sources into a comprehensive DataFrame.
 
@@ -198,11 +202,13 @@ def individual_flatfile(URRT_folder,
     plans = plans[['Plan ID', 'Network ID']]  # Keep only the necessary columns
     
     # Load Network table data
-    network_key = Network_Table(r"C:\Users\A654219\Documents\GA\Network Templates")
+    network_key = Network_Table(network_folder)
     
     # Load rate table data
     rates = Rate_Table(rates_folder)
-    rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area 3\b',na=False)].reset_index(drop=True)
+    # Filtering for ONLY rating area 3 for GA KPIF
+    if LOB == 'ind' and new_df['Region'][0] == 'GA':
+        rates = rates[rates['Rating Area ID'].str.contains(r'Rating Area 3\b',na=False)].reset_index(drop=True)
     rates = rates[['Plan ID','Rating Area ID', 'Individual Rate']]
     
     # Load rate area mapping
